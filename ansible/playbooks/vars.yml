@@ -1,0 +1,4 @@
+mysql_root_password: "Root@123"
+mysql_db: "appdb"
+mysql_user: "appuser"
+mysql_user_password: "App@123"

@@ -1,0 +1,68 @@
+---
+- name: Full Apache2 setup with custom web page on Ubuntu
+  hosts: [web]
+  become: yes
+
+  vars:
+    web_root: /var/www/html
+    page_title: "Apache Web Server - Ansible"
+    owner_name: "Deployed via Ansible"
+
+  tasks:
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install Apache2
+      apt:
+        name: apache2
+        state: present
+
+    - name: Start and enable Apache2 service
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+
+    - name: Create custom index.html
+      copy:
+        dest: "{{ web_root }}/index.html"
+        owner: www-data
+        group: www-data
+        mode: '0644'
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>{{ page_title }}</title>
+              <style>
+                  body {
+                      font-family: Arial, sans-serif;
+                      background-color: #f4f4f4;
+                      text-align: center;
+                      margin-top: 100px;
+                  }
+                  h1 {
+                      color: #2c3e50;
+                  }
+                  p {
+                      color: #555;
+                      font-size: 18px;
+                  }
+              </style>
+          </head>
+          <body>
+              <h1>🚀 Apache updated Successfully!</h1>
+              <p>Hostname: {{ inventory_hostname }}</p>
+              <p>Managed by: {{ owner_name }}</p>
+          </body>
+          </html>
+
+    - name: Allow Apache through UFW (if enabled)
+      ufw:
+        rule: allow
+        name: "Apache"
+      when: ansible_facts['os_family'] == "Debian"
+      ignore_errors: yes
