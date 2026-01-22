@@ -119,11 +119,17 @@ AzureVM-Ansible/
 
 ```ini
 [defaults]
-inventory = inventory/hosts
+inventory = ./inventory
 remote_user = ubuntu
-private_key_file = azure/ansible.pem
-host_key_checking = False
-retry_files_enabled = False
+private_key_file= azure/ansible.pem
+host_key_checking=False
+retry_files_enabled=False
+
+[privilege_escalation]
+become = true
+become_method = sudo
+become_user = root
+become_ask_pass = false
 ```
 
 ---
